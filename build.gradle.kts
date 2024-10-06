@@ -9,6 +9,7 @@ plugins {
 }
 
 allprojects {
+    //TODO: Rename group
     group = "app.simplecloud.template"
     version = "0.0.1-EXPERIMENTAL"
 
@@ -20,12 +21,12 @@ allprojects {
 
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "com.gradleup.shadow")
     apply(plugin = "maven-publish")
 
     dependencies {
-        testImplementation(rootProject.libs.kotlinTest)
-        implementation(rootProject.libs.kotlinJvm)
+        testImplementation(rootProject.libs.kotlin.test)
+        implementation(rootProject.libs.kotlin.jvm)
     }
 
     publishing {
@@ -49,11 +50,24 @@ subprojects {
     }
 
     tasks.named("shadowJar", ShadowJar::class) {
-        mergeServiceFiles()
+        dependsOn("processResources")
+        dependencies {
+            //TODO: Replace this with the renamed shared module
+            include(project(":template-gradle-shared"))
+            /**
+             * TODO: Add dependencies ADDED BY YOU like this:
+             * include(dependency(libs.your.dependency.get()))
+             */
+        }
         archiveFileName.set("${project.name}.jar")
     }
 
     tasks.test {
         useJUnitPlatform()
+    }
+
+    tasks.processResources {
+        expand("version" to project.version,
+            "name" to project.name)
     }
 }

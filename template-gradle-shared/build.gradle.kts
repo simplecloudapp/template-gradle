@@ -1,3 +1,3 @@
 dependencies {
-    api(libs.simpleCloudController)
+    api(libs.simplecloud.controller)
 }
